@@ -1,47 +1,39 @@
 import React, { Component } from "react";
 import BadgesList from "../components/BadgesList";
+import PageLoading from "../components/PageLoading";
+import PageError from "../components/PageError";
 
 import "./styles/Badges.css";
 import confLogo from "../images/badge-header.svg";
 import { Link } from "react-router-dom";
-
+import api from "../api";
 export default class Badges extends Component {
   constructor(props) {
     super(props);
     console.log("1 constructor");
     this.state = {
-      nextPage: 1,
       loading: true,
       error: null,
-      data: {
-        results: []
-      }
+      data: undefined
     };
   }
 
   componentDidMount() {
     console.log("3 componentDidMount");
-    this.fetchCharacter();
+    this.fetchData();
+    this.intervalId = setInterval(this.fetchData, 5000);
   }
-  fetchCharacter = async () => {
+
+  fetchData = async () => {
     this.setState({
       loading: true,
       error: null
     });
     try {
-      const response = await fetch(`https://rickandmortyapi.com/api/character?page=${this.state.nextPage}`);
-      const data = await response.json();
-
+      const data = await api.badges.list();
       this.setState({
         loading: false,
-        data: {
-          info: data.info,
-          results: [].concat(
-            this.state.data.results,
-            data.results
-          )
-        },
-        nextPage: this.state.nextPage + 1
+        data: data
       });
     } catch (error) {
       this.setState({
@@ -62,11 +54,18 @@ export default class Badges extends Component {
   componentWillUnmount() {
     console.log("6 componentWillUnmount");
     clearTimeout(this.timeoutId);
+    clearTimeout(this.intervalId);
+
   }
 
   render() {
     console.log("2/4 render");
-
+    if (this.state.loading === true && !this.state.data) {
+      return <PageLoading />;
+    }
+    if (this.state.error) {
+      return <PageError error={this.state.error} />;
+    }
     return (
       <React.Fragment>
         <div className="Badges">
@@ -86,7 +85,8 @@ export default class Badges extends Component {
 
           <div className="Badges__list">
             <div className="Badges__container">
-              <BadgesList onClick={this.fetchCharacter} badges={this.state.data} loading={this.state.loading} error={this.state.error}/>
+              <BadgesList badges={this.state.data} />
+              {this.state.loading && "Loading"}
             </div>
           </div>
         </div>

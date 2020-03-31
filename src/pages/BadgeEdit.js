@@ -6,10 +6,10 @@ import BadgeForm from "../components/BadgeForm";
 import PageLoading from "../components/PageLoading";
 import api from "../api";
 
-import "./styles/BadgeNew.css";
-class BadgeNew extends Component {
+import "./styles/BadgeEdit.css";
+class BadgeEdit extends Component {
   state = {
-    loading: false,
+    loading: true,
     error: null,
     form: {
       firstName: "",
@@ -19,6 +19,33 @@ class BadgeNew extends Component {
       twitter: "",
     }
   };
+
+  componentDidMount(){
+    this.fetchData();
+  }
+
+  fetchData = async(e) =>{
+    this.setState({
+      loadind: true,
+      error: null
+    });
+
+    try {
+      const data = await api.badges.read(
+        this.props.match.params.badgeId
+      );
+      this.setState({
+        loadind: false,
+        form: data
+      });
+    } catch (error) {
+      this.setState({
+        loadind: false,
+        error: error
+      });
+    }
+
+  }
 
   handleChange = e => {
     this.setState({
@@ -35,7 +62,7 @@ class BadgeNew extends Component {
       error: null
     });
     try {
-      await api.badges.create(this.state.form);
+      await api.badges.update(this.props.match.params.badgeId, this.state.form);
       this.setState({
         loadind: false
       });
@@ -53,8 +80,8 @@ class BadgeNew extends Component {
     }
     return (
       <React.Fragment>
-        <div className="BadgeNew__hero">
-          <img className="BadgeNew__hero-image img-fluid" src={header} alt="" />
+        <div className="BadgeEdit__hero">
+          <img className="BadgeEdit__hero-image img-fluid" src={header} alt="" />
         </div>
         <div className="container">
           <div className="row">
@@ -68,7 +95,7 @@ class BadgeNew extends Component {
               />
             </div>
             <div className="col-6">
-            <h1>New Asistente</h1>
+            <h1>Edit Asistente</h1>
               <BadgeForm
                 onChange={this.handleChange}
                 onSubmit={this.handlesubmit}
@@ -83,4 +110,4 @@ class BadgeNew extends Component {
   }
 }
 
-export default BadgeNew;
+export default BadgeEdit;

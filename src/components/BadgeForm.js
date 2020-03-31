@@ -19,16 +19,15 @@ export default class BadgeForm extends Component {
   render() {
     return (
       <div>
-        <h1>New Wachin</h1>
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.props.onSubmit}>
           <div className="form-group">
             <label>First Name</label>
             <input
               onChange={this.props.onChange}
               className="form-control"
               type="text"
-              name="firstname"
-              value={this.props.formValues.firstname}
+              name="firstName"
+              value={this.props.formValues.firstName}
             />
           </div>
 
@@ -38,8 +37,8 @@ export default class BadgeForm extends Component {
               onChange={this.props.onChange}
               className="form-control"
               type="text"
-              name="lastname"
-              value={this.props.formValues.lastname}
+              name="lastName"
+              value={this.props.formValues.lastName}
             />
           </div>
 
@@ -60,8 +59,8 @@ export default class BadgeForm extends Component {
               onChange={this.props.onChange}
               className="form-control"
               type="text"
-              name="jobtitle"
-              value={this.props.formValues.jobtitle}
+              name="jobTitle"
+              value={this.props.formValues.jobTitle}
             />
           </div>
 
@@ -79,6 +78,9 @@ export default class BadgeForm extends Component {
           <button onClick={this.handleClick} className="btn btn-primary">
             save
           </button>
+          {this.props.error && (
+            <p className="text-danger">{this.props.error.message}</p>
+          )}
         </form>
       </div>
     );
